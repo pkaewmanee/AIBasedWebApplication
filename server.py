@@ -1,21 +1,32 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from EmotionDetection import emotion_detector
 
 app = Flask(__name__)
 
 
-@app.route('/emotionDetector', methods=['POST'])
+@app.route("/")
+def index():
+    """
+    Serve the index.html file.
+    Returns:
+        Rendered HTML page for the application.
+    """
+    return render_template("index.html")
+
+
+@app.route("/emotionDetector", methods=["POST"])
 def emotion_detector_endpoint():
     """
     Endpoint to analyze emotions in the given text.
+
     Returns:
         JSON: Formatted response containing emotion scores and dominant emotion,
               or an error message for invalid input.
     """
     # Extract the text to analyze from the POST request
-    text_to_analyze = request.json.get('text')
+    text_to_analyze = request.json.get("text", "").strip()
 
-    if not text_to_analyze or not text_to_analyze.strip():
+    if not text_to_analyze:
         # Handle blank input
         return jsonify({"error": "Invalid text! Please try again!"}), 400
 
@@ -28,7 +39,7 @@ def emotion_detector_endpoint():
 
     if result['dominant_emotion'] == 'none':
         # Handle cases where no dominant emotion is detected
-        return jsonify({"error": "Invalid text! Please try again!"}), 400
+        return jsonify({"error": "No dominant emotion detected! Please try again with valid text."}), 400
 
     # Format the response message
     response_message = (
@@ -47,4 +58,4 @@ def emotion_detector_endpoint():
 
 if __name__ == '__main__':
     # Run the Flask server on localhost, port 5000
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host="0.0.0.0", port=5001)

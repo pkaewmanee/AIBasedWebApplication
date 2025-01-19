@@ -1,4 +1,5 @@
 import requests
+import json
 
 def emotion_detector(text_to_analyze):
     """
@@ -29,7 +30,8 @@ def emotion_detector(text_to_analyze):
             'fear': None,
             'joy': None,
             'sadness': None,
-            'dominant_emotion': 'none'
+            'dominant_emotion': 'none',
+            'error': 'Blank input provided'
         }
 
     # Watson NLP API URL and headers
@@ -48,7 +50,7 @@ def emotion_detector(text_to_analyze):
 
     try:
         # Make the POST request
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
 
         # Check if the request was successful
         if response.status_code == 200:
@@ -101,7 +103,8 @@ def emotion_detector(text_to_analyze):
                 'fear': None,
                 'joy': None,
                 'sadness': None,
-                'dominant_emotion': 'none'
+                'dominant_emotion': 'none',
+                'error': 'Invalid input: Please check the text'
             }
         else:
             # Handle unexpected status codes
@@ -112,3 +115,4 @@ def emotion_detector(text_to_analyze):
     except requests.exceptions.RequestException as e:
         # Handle request errors
         return {"error": str(e)}
+
